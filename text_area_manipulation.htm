@@ -1,0 +1,520 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <title>SUBEDI HTML Editor</title>
+    </head>
+    <body>
+        
+        <div style="resize: none; display: inline-block; width: 50%;"><textarea spellcheck=false id="textarea" autocomplete="on" style="" oninput="edited();"></textarea></div>
+        <span id="wysiwyg" style="resize: none; vertical-align: top; display: inline-block; overflow: auto; height: 57vh; width: 49.10%; border: 3px solid black;"></span>
+        
+	<input id="command" type="text" style="width: 99.4%"></input>
+    <input id="css" type="checkbox" onchange="tcss();">CSS</input>
+    <input id="cbind" type="checkbox" onchange="tindent();" checked=true>Indent</input>
+    <input id="cbbr" type="checkbox" onchange="tbr();">&lt;br/&gt;</input>
+    <input id="cbsc" type="checkbox" onchange="chk();">Spellcheck</input>
+    <input id="cbkbd" type="checkbox" onchange="kbd();" >Keyboard</input>
+        <style contenteditable=true style="display: none; white-space: pre;">
+            #wysiwyg > table, td, th{
+                border: 1px solid black;
+                padding: 2px;
+                border-collapse: collapse;
+            }  
+            #wysiwyg{
+                color: goldenrod;
+                background: darkred;
+            }
+            #textarea{
+                height: 57vh;
+                width: 99%;
+                background-color: black;
+                color: darkred;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 16px;
+            }
+            body{
+                background: black;
+                color: white;
+            }
+    .thumb{
+        background: #999999;
+    }
+    .index_left{
+        background: #99cc99;
+    }
+    .middle_left{
+        background: #cc6666;
+    }
+    .ring_left{
+        background: #9966cc;
+    }
+    .little_left{
+        background: #ff6633;
+    }
+    .index_right{
+        background: #ff9999;
+    }
+    .middle_right{
+        background: #669999;
+    }
+    .ring_right{
+        background: #cccccc;
+    }
+    .little_right{
+        background: #ffff33;
+    }
+    
+    .space{
+        width: 267px;
+        height: 50px;
+        border-radius: 5px;
+        vertical-align: middle;
+        text-align: center;
+    }
+    .key{
+        display: block;
+        float: left;
+        margin: 2px;
+        color: black;
+    }
+    .number{
+        text-align: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+        background: #ffeeff;
+    }
+    .letter{
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+        color: black;
+    }
+    .multiple{
+        line-height: 50px;
+    }
+    .keyboard{
+        width: 1000px;
+    }
+    .small{
+        width: 40px;
+        height: 20px;
+        border-radius: 4px;
+        background: #cccccc;
+    }
+    .longer{
+        width: 70px;
+        height: 50px;
+        border-radius: 5px;
+        color: black;        
+    }
+    .placeholder{
+        width: 33px;
+        height: 52px;
+        margin-top: 0px;
+        border-radius: 5px;
+    }
+    .placeholder1{
+        width: 50px;
+        height: 52px;
+        margin-top: 0px;
+        border-radius: 5px;
+        background: #ffeeff;
+    }
+    .shift_lock{
+        width: 90px;
+        height: 50px;
+        border-radius: 4px;
+        color: black;
+    }
+    .long{
+        width: 62px;
+        height: 50px;
+        border-radius: 4px;
+        color: black;
+    }
+    .enter{
+        width: 53px;
+        margin-bottom: 0px;
+        color: black;
+    }
+    #keyboard{
+        horizontal-align: center;
+    }
+        </style>
+        <!--<div style="float: right; color: white; width: 50%;"><br/>Shortcuts:<br/>F1: Toggle HTML view<br/>i: Wrap selection in a list<br/>Tab: Expand tag</div>-->
+        <div  id="keyboard" class="keyboard" hidden="true">
+            <div class="row" id="second-row">
+                <div class="key letter 0 little_left">3<br/>2</div>
+                <div class="key letter 49 little_left">1<br/>&&nbsp;&nbsp;&nbsp;&nbsp;|</div>
+                <div class="key letter 50 little_left">2<br/>&eacute;&nbsp;&nbsp;&nbsp;&nbsp;@</div>
+                <div class="key letter 51 middle_left">3<br/>"&nbsp;&nbsp;&nbsp;&nbsp;#</div>
+                <div class="key letter 52 index_left">4<br/>'</div>
+                <div class="key letter 53 index_left">5<br/>(</div>
+                <div class="key letter 54 index_right">6<br/>&sect;&nbsp;&nbsp;&nbsp;&nbsp;^</div>
+                <div class="key letter 55 index_right">7<br/>&egrave;</div>
+                <div class="key letter 56 middle_right">8<br/>!</div>
+                <div class="key letter 57 ring_right">9<br/>&ccedil;&nbsp;&nbsp;&nbsp;&nbsp;{</div>
+                <div class="key letter 48 little_right">0<br/>&agrave;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                <div class="key letter 169 little_right">&deg;<br/>)</div>
+                <div class="key letter 173 little_right">_<br/>-</div>
+                <div class="key 8 little_right longer">&larr;</div>
+                <div class="key letter 144 number">Num<br/>Lock</div>
+                <div class="key letter 111 number">&divide;</div>
+                <div class="key letter 106 number">*<br/></div>
+                <div class="key letter 109 number">-<br/></div>
+            </div>
+            <div class="row" id="third-row">
+                <div class="key 9 little_left longer">Tab</div>
+                <div class="key letter char normal 65 little_left">A<br/></div>
+                <div class="key letter char normal 90 ring_left">Z<br/></div>
+                <div class="key letter char normal 69 middle_left">E<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;€</div>
+                <div class="key letter char normal 82 index_left">R<br/></div>
+                <div class="key letter char normal 84 index_left">T<br/></div>
+                <div class="key letter char normal 89 index_right">Y<br/></div>
+                <div class="key letter char normal 85 index_right">U<br/></div>
+                <div class="key letter char normal 73 middle_right">I<br/></div>
+                <div class="key letter char normal 79 ring_right">O<br/></div>
+                <div class="key letter char normal 80 little_right">P<br/></div>
+                <div class="key letter 160 little_right">&uml;<br/>^&nbsp;&nbsp;&nbsp;&nbsp;[</div>
+                <div class="key letter 164 little_right">*<br/>$&nbsp;&nbsp;&nbsp;&nbsp;]</div>
+                <div class="key letter 13 little_right enter">Enter</div>
+                <div class="key letter 103 number">7<br/></div>
+                <div class="key letter 104 number">8<br/></div>
+                <div class="key letter 105 number">9<br/></div>
+                <div class="key 107 number">+<br/></div>
+            </div>
+            <div class="row" id="fourth-row">
+                <div class="key letter 20 little_left shift_lock">ShiftLock</div>
+                <div class="key letter char normal 81 little_left">Q<br/></div>
+                <div class="key letter char normal 83 ring_left">S<br/></div>
+                <div class="key letter char normal 68 middle_left">D<br/></div>
+                <div class="key letter char normal 70 index_left">F<br/><div class="home">&nbsp;&nbsp;&nbsp;_</div></div>
+                <div class="key letter char normal 71 index_left">G<br/></div>
+                <div class="key letter char normal 72 index_right">H<br/></div>
+                <div class="key letter char normal 74 index_right">J<br/><div class="home">&nbsp;&nbsp;&nbsp;_</div></div>
+                <div class="key letter char normal 75 middle_right">K<br/></div>
+                <div class="key letter char normal 76 ring_right">L<br/></div>
+                <div class="key letter char normal 77 little_right">M<br/></div>
+                <div class="key letter 165 little_right">%<br/>&ugrave;&nbsp;&nbsp;&nbsp;&nbsp;&acute;</div>
+                <div class="key letter 0 little_right">&pound;<br/>&micro;&nbsp;&nbsp;&nbsp;&nbsp;`</div>
+                <div class="key 13 little_right placeholder"></div>
+                <div class="key letter 100 number">4<br/></div>
+                <div class="key letter 101 number">5<br/></div>
+                <div class="key letter 102 number">6<br/></div>
+                <div class="key letter 107 placeholder1"></div>                
+                <br/>
+            </div>
+            <div class="row" id="fifth-row">
+                <div class="key 16 left little_left long">Shift</div>
+                <div class="key letter 60 little_left">&gt;<br/><&nbsp;&nbsp;&nbsp;&nbsp;\</div>
+                <div class="key letter char normal 87 ring_left">W<br/></div>
+                <div class="key letter char normal 88 middle_left">X<br/></div>
+                <div class="key letter char normal 67 middle_left">C<br/></div>
+                <div class="key letter char normal 86 index_left">V<br/></div>
+                <div class="key letter char normal 66 index_left">B<br/></div>
+                <div class="key letter char normal 78 index_right">N<br/></div>
+                <div class="key letter 188 index_right multiple">?<br/>,</div>
+                <div class="key letter 59 middle_right">.<br/>;</div>
+                <div class="key letter 58 ring_right">:<br/>/</div>
+                <div class="key letter 61 little_right">+<br/>=&nbsp;&nbsp;&nbsp;&nbsp;~</div>
+                <div class="key 16 right little_right long">Shift</div>
+                <div class="key letter 38 little_right">&uarr;</div>
+                <div class="key letter 97 number">1<br/></div>
+                <div class="key letter 98 number">2<br/></div>
+                <div class="key letter 99 number">3<br/></div>
+                <div class="key 13 number">Enter</div>
+            </div>
+            <div class="row" id="sixth-row">
+                <div class="key 17 left little_left long">Ctrl</div>
+                <div class="key letter little_left">Fn</div>
+                <div class="key letter 91 little_left">Win</div>
+                <div class="key letter 18 thumb">Alt</div>
+                <div class="key 32 thumb space">Space</div>
+                <div class="key letter 17_18 thumb">AltGr</div><!--both at the same time-->
+                <div class="key letter 93 ring_right">&equiv;</div>
+                <div class="key 17 right little_right long">Ctrl</div>
+                <div class="key letter 37 little_right">&larr;</div>
+                <div class="key letter 40 little_right">&darr;</div>
+                <div class="key letter 39 number">&rarr;</div>
+                <div class="key letter 96 number">0<br/></div>
+                <div class="key letter 110 number">.<br/></div>                
+                <div class="key 13 placeholder1"></div>
+            </div>
+</div>
+        <script>
+	    var isedited = false;
+            window.onbeforeunload = exit;
+	    function exit() {
+		    if(isedited) { 
+			    return "Do you want to exit without saving?";} 
+		    else {
+			    return false;
+		    } 
+	    };
+            function edited() {
+		    isedited = true;
+	    }
+            var spaces = 4;
+            var linebreak = "<br/>";
+            var source = true, s = false;;
+            var ta = document.getElementById("textarea");
+            var tl = document.getElementById("command");
+            var wysiwyg = document.getElementById("wysiwyg")
+            var b = false, i = true, c = false;
+            var css = document.getElementById("css");
+            var mode = "Insert"; //Visual, Normal
+            var key = undefined;
+            var color;
+            ta.focus();                
+            window.onload =  function()  {
+                tl.onkeydown = function(event) {                    
+                    if (event.which == 13 && ta.selectionStart != ta.selectionEnd) {//Enter
+                        var v = tl.value;
+                        tl.value = "";
+                        if (v == "ul" || v === "ol") {
+                            toList(v);
+                            event.preventDefault();
+                            return false;
+                        } else if (v == "b" || v == "i" || v == "u" || v == "h1" || v == "h2" || v == "h3" || v == "h4" || v == "h5" || v == "h6" || v == "div" || v == "span" || v == "p" || v == "s" || v == "sup" || v == "sub" || v == "pre") {
+                            insertTag("<" + v + ">", "</" + v + ">");
+                            tl.value = "";
+                            event.preventDefault();
+                            return false;
+                        }
+                    } else if (event.which == 13) {
+                        var v = tl.value;
+                        if (v == "br" ) {
+                            tbr();
+                        } else if (v == "ind" ) {
+                            tindent();
+                        } else if (v == "chk" ) {
+                            scheck();
+                        } else if (v == "kbd" ) {
+                            kbd();
+                        } else if (v == "css" ) {
+                            tcss();
+                        } 
+                    } else if (event.which == 38) {//Arrow up
+                        ta.focus();
+                    } else {
+                        console.log(event.which);
+                    }
+                }
+                ta.onkeydown = function textarea(event) {
+                    var c = color, k = key;            
+                    var temp = document.getElementsByClassName(event.which)[0].style.background;
+                    if (temp != "none repeat scroll 0% 0% red"){color = temp; key = event.which;}
+                    changeColor(k, c);
+                    changeColor(event.which, "red");
+                    wysiwyg.innerHTML = ta.value;
+                    wysiwyg.scrollTop = wysiwyg.scrollHeight; //scroll to the bottom
+                    if (event.which == 9) {//Tab
+                        var temp;
+                        temp = ta.value.substring(0, ta.selectionStart).split("\n");
+                        temp = temp[temp.length - 1].split(" ");
+                        temp = temp[temp.length - 1].split(">");
+                        temp = temp[temp.length - 1];
+                        console.log(temp, temp.length);
+                        var nSelStart = ta.selectionStart, nSelEnd = ta.selectionEnd;
+                        if (nSelStart == nSelEnd) {
+                            ta.value = ta.value.substring(0, nSelStart - temp.length) + ta.value.substring(nSelEnd);
+                            ta.setSelectionRange(nSelStart - temp.length, nSelEnd - temp.length);
+                        }
+                        switch(temp) {
+                            case "html":
+                            case "head":
+                            case "body":
+                            case "script":
+                            case "style":
+                            case "table":
+                            case "tr":
+                                insertTag("<" + temp + ">\n" + getIndents() + indent(spaces), "\n" + getIndents() + "</" + temp + ">");
+                                break;
+                                
+                            case "ul":
+                            case "ol":
+                                toList(temp);
+                                break;
+                                
+                            default:                                    
+                                insertTag("<" + temp + ">", "</" + temp + ">");
+                                break;
+                        }
+                        return false;
+                    } else if(event.which == 13){//Enter                        
+                        onEnter(event);                            
+                    } else if(event.which == 112){//F1
+                        if(source == true) {
+                            document.getElementById("wysiwyg").innerHTML = ta.value;
+                            source = false;
+                        } else {                        
+                            document.getElementById("wysiwyg").innerHTML = "";
+                            source = true;
+                        }
+                    } else if(event.which == 73 && ta.selectionStart != ta.selectionEnd){//i
+                        tl.focus();
+                        return false;
+                    }
+                    ta.focus();
+                    //wysiwyg.innerHTML = ta.value;
+                }
+            }
+            function insertTag(sStartTag, sEndTag) {
+                var nSelStart = ta.selectionStart, nSelEnd = ta.selectionEnd, sOldText = ta.value;
+                ta.value = sOldText.substring(0, nSelStart) + sStartTag + sOldText.substring(nSelStart, nSelEnd) + sEndTag + sOldText.substring(nSelEnd);
+                ta.setSelectionRange(nSelStart + sStartTag.length, sStartTag.length + nSelEnd);
+                ta.focus();
+            }
+            function toList(sTypeList) {
+                var nSelStart = ta.selectionStart, nSelEnd = ta.selectionEnd, sOldText = ta.value;
+                var temp = sOldText.substring(0, nSelStart).split("\n");
+                var i = temp[temp.length - 1].length - temp[temp.length - 1].trimLeft().length;
+                console.log("i: " + i);
+                if (nSelStart === nSelEnd) {//text is not selected
+                    ta.value = sOldText.substring(0, nSelStart) + "<" + sTypeList + ">\n" + indent(i + spaces) + "<li></li>\n" + indent(i) + "</" +  sTypeList + ">\n" + sOldText.substring(nSelEnd);
+                    ta.setSelectionRange(nSelStart + i + spaces + 9, nSelStart + i + spaces + 9);
+                } else {//text is selected
+                    var text = sOldText.substring(0, nSelStart) + "<" + sTypeList + ">\n";
+                    var nLines = sOldText.substring(nSelStart, nSelEnd).split("\n");
+                    for (var j = 0; j < nLines.length; j++) {
+                        text += indent(i + spaces)+ "<li>" + nLines[j].trim() + "</li>\n";
+                    }
+                    text += indent(i) + "</" +  sTypeList + ">" + sOldText.substring(nSelEnd);
+                    ta.value = text;
+                    ta.setSelectionRange(nSelStart + 9 + i,
+                        nSelEnd + 5 + (nLines.length == 1 ? i + spaces + 9  : (spaces + 9)*(nLines.length) + i)
+                    );//9 = "<ul>\n    ", endtag "</" + "sTypeList" + ">\n" omitted, 5 = "<ul>\n", 
+                    console.log(nLines);
+                }
+                ta.focus();
+            }
+            function indent(nSpaces) {
+            var s = "";
+                for (var i = 0; i < nSpaces; i++) {
+                    s += " ";
+                }
+                return s;
+            }
+            function ind(event) {
+               if (event != undefined) event.preventDefault();
+               var nIndents = getIndents(), nSelStart = ta.selectionStart;
+               ta.value = ta.value.substring(0, nSelStart) + "\n" + nIndents + ta.value.substring(ta.selectionEnd);
+               ta.setSelectionRange(nSelStart + nIndents.length + 1, nSelStart + nIndents.length + 1);
+               return false;
+            }
+            function onEnter(event) {
+               if (b) br(event);
+               if (i) ind(event);
+               //event.stopImmediatePropagation();
+               //event.preventDefault();
+            }
+            function getIndents() {
+               var temp = ta.value.substring(0, ta.selectionStart).split("\n");
+               return indent(temp[temp.length - 1].length - temp[temp.length - 1].trimLeft().length);               
+            }
+            function br() {
+                var nSelStart = ta.selectionStart;
+                var temp;
+                temp = ta.value.substring(0, ta.selectionStart).split("\n");
+                temp = temp[temp.length - 1].split("</");
+                temp = temp[temp.length - 1].split(">");
+                temp = temp[temp.length - 2];
+                console.log(temp);
+                switch (temp) {
+                    case "li":
+                    case "h1":
+                    case "h2":
+                    case "h3":
+                    case "h4":
+                    case "h5":
+                    case "h6":
+                    case "div":
+                    case "p":
+                    case "td":
+                        break;
+                    default:
+                        ta.value = ta.value.substring(0, nSelStart) + linebreak + ta.value.substring(ta.selectionEnd);
+                        ta.setSelectionRange(nSelStart + 5, nSelStart + 5);
+                        break;
+                }
+            }
+            function tbr() {
+                if (b) {b = false;} else {b = true; document.getElementBy}
+            }
+            function tindent() {
+                if (i) i = false; else i = true;
+            }
+            function tcss() {
+                if (c) {document.getElementsByTagName("style")[0].style.display="none"; c= false;}
+                else {document.getElementsByTagName("style")[0].style.display="block"; c = true;}
+            }
+            function chk() {
+                var a = document.getElementById("textarea");
+                if(a.spellcheck == false) {
+                    a.spellcheck = true;
+                } else {a.spellcheck = false;}
+            }
+            function kbd() {
+                var a = document.getElementById("keyboard");
+                if (a.hidden == true) a.hidden = false;
+                else a.hidden = true;
+            }
+            function changeColor(classNumber, color) {
+                var elements = document.getElementsByClassName(classNumber);        
+                console.log(elements.length);            
+                for(var i = 0; i < elements.length; i++) {
+                    elements[i].style.background = color;
+                }
+            }
+       </script>
+    </body>
+</html>
+<!--
+emmet coding
+snippets: variables to determine number of stops and textposition, current stop, entered text length and such
+rectangular selection
+br, css, indent toggle
+style="width: 50%; float:right;"
+height: 75vh;
+line numbers
+auto complete
+syntax highlighting
+indent on enter
+indent on open bracket
+<br/> on enter
+rectangular selection
+h1 - h6
+ul, ol
+html, title, body, head, p, li
+
+            else if (event.which == 73) {//i
+                        tl.focus();
+                        event.preventDefault();
+                        return false;
+                    }  else 
+-->
+
+            <!--<div class="row" id="first-row">
+                <div class="key small 27">Esc</div>
+                <div class="key small 112">F1</div>
+                <div class="key small 113">F2</div>
+                <div class="key small 114">F3</div>
+                <div class="key small 115">F4</div>
+                <div class="key small 116">F5</div>
+                <div class="key small 117">F6</div>
+                <div class="key small 118">F7</div>
+                <div class="key small 119">F8</div>
+                <div class="key small 120">F9</div>
+                <div class="key small 121">F10</div>
+                <div class="key small 122">F11</div>
+                <div class="key small 123">F12</div>
+                <div class="key small">PrtSc</span>
+                <div class="key small 45">Insert</div>
+                <div class="key small 46">Delete</div>
+                <div class="key small 36">Home</div>
+                <div class="key small 35">End</div>
+            </div>-->
